@@ -14,3 +14,4 @@ Directly run Assembler.jl
 
 Key Files:
 Assembler.jl containers the Genome Assembler Code
+Genomia Folder contains the skeleton of the Genie.jl website 
