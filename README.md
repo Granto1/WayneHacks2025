@@ -1,4 +1,5 @@
-Genomia!
+Genomia!    
+1st Place at WayneHacks 3 (2025)!
 
 Devpost Link: https://devpost.com/software/genomia  
 Video Presentation Link: https://youtu.be/v_mG-In7IWo
@@ -10,7 +11,7 @@ Built by: Grant Wang
 Navigation
 
 How to Run:
-Directly run Assembler.jl
+Directly run Assembler.jl in Julia repl
 
 Key Files:
 Assembler.jl containers the Genome Assembler Code

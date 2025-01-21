@@ -7,7 +7,7 @@ using Base.Threads
 function construct_de_bruijn_graph(sequences::Vector{String}, k::Int)
     graph = Dict{String, Vector{String}}()
     for sequence in sequences
-        # Generate k-mers for each sequence
+        # generate k-mers for each sequence 
         for i in 1:(length(sequence) - k + 1)
             prefix = sequence[i:i+k-2]
             suffix = sequence[i+1:i+k-1]
@@ -20,17 +20,7 @@ function construct_de_bruijn_graph(sequences::Vector{String}, k::Int)
     return graph
 end
 
-function reconstruct_sequence_multi(paths::Vector{Vector{Int}}, k::Int)
-    sequence = ""
-    for path in paths
-        # Decode and combine paths
-        sub_sequence = reconstruct_sequence(path, k)
-        sequence *= sub_sequence[k:end]  # Append avoiding duplicate overlap
-    end
-    return sequence
-end
-
-# Function to visualize the De Bruijn graph
+# visualize graph in adjacency list format
 function print_de_bruijn_graph(graph::Dict{String, Vector{String}})
     for (node, edges) in graph
         println("$node -> ", join(edges, ", "))
@@ -38,40 +28,40 @@ function print_de_bruijn_graph(graph::Dict{String, Vector{String}})
 end
 
 function find_start_kmer(debruijn_graph::Dict{String, Vector{String}})
-    # Step 1: Find a k-mer with no predecessors
+    # look for kmer with no predecessor
     for (kmer, neighbors) in debruijn_graph
         if !any(kmer in successors for successors in values(debruijn_graph))
-            return kmer  # Found a k-mer with no predecessors
+            return kmer 
         end
     end
 
-    # Step 2: If no k-mer with no predecessors, find one with fewer predecessors than successors
-    # Create a dictionary to count the in-degree of each k-mer
+    # no kmer with no predecessor, find one with fewer predecessors than successors
+    # hold degrees
     in_degree = Dict{String, Int}()
     out_degree = Dict{String, Int}()
 
-    # Initialize in-degree and out-degree counts for all k-mers
+    # init the degrees
     for kmer in keys(debruijn_graph)
         in_degree[kmer] = 0
         out_degree[kmer] = length(debruijn_graph[kmer])
     end
 
-    # Count in-degrees by iterating through edges
+    # iterate through edges and find degrees
     for neighbors in values(debruijn_graph)
         for neighbor in neighbors
             in_degree[neighbor] = get(in_degree, neighbor, 0) + 1
         end
     end
 
-    # Step 3: Find the k-mer with fewer predecessors than successors
+    # find k-mer with fewer predecessors than successors
     for kmer in keys(debruijn_graph)
         if in_degree[kmer] < out_degree[kmer]
             println("Start k-mer: $kmer (in-degree: $in_degree[kmer], out-degree: $out_degree[kmer])")
-            return kmer  # Found a k-mer with fewer predecessors than successors
+            return kmer 
         end
     end
 
-    # If no such k-mer exists, return the one with the maximum in-degree (fall-back)
+    # no kmer exists, find max in-degree
     start_kmer = argmax(in_degree)
     max_in_degree = in_degree[start_kmer]
     println("Fallback Start k-mer: $start_kmer (in-degree: $max_in_degree)")
@@ -114,7 +104,7 @@ function shortest_string_length(sequences::Vector{String})
     return minimum(map(length, sequences))
 end
 
-
+# run sequence for each k value
 function parallelProcess(sequence::Vector{String}, k_min::Int, k_max::Int)
     results = Vector{String}(undef, k_max - k_min + 1)
 
@@ -252,4 +242,14 @@ end
 #             graph[node] = String[]  # Initialize with no outgoing edges
 #         end
 #     end
+# end
+
+# function reconstruct_sequence_multi(paths::Vector{Vector{Int}}, k::Int)
+#     sequence = ""
+#     for path in paths
+#         # Decode and combine paths
+#         sub_sequence = reconstruct_sequence(path, k)
+#         sequence *= sub_sequence[k:end]  # Append avoiding duplicate overlap
+#     end
+#     return sequence
 # end
